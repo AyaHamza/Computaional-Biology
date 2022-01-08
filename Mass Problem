@@ -1,0 +1,26 @@
+from pyopenms import *
+V = ResidueDB().getResidue("V")
+print(V.getName())
+v_mass = V.getMonoWeight()
+print(v_mass)
+
+
+A = ResidueDB().getResidue("A")
+print(A.getName()) 
+a_mass = A.getMonoWeight()
+print(a_mass)
+
+K = ResidueDB().getResidue("K")
+print(K.getName())
+k_mass = K.getMonoWeight()
+print(k_mass) 
+total_mass = v_mass + v_mass + k_mass+ a_mass
+print(total_mass)
+sequence = AASequence.fromString("VVAK") 
+fullmass = sequence.getMonoWeight() 
+print(fullmass) 
+if total_mass!=fullmass:
+    print(there is difference")
+else :
+    print("There is no difference")
+ 
