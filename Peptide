@@ -1,0 +1,88 @@
+from pyopenms import *
+import math
+from matplotlib import pyplot as plt
+seq = AASequence.fromString("DFPIANGER") # create AASequence object from string representation
+prefix = seq.getPrefix(4) # extract prefix of length 4
+suffix = seq.getSuffix(5) # extract suffix of length 5
+concat = seq + seq # concatenate two sequences
+
+# print string representation of sequences
+print("Sequence:", seq)
+print("Prefix:", prefix)
+print("Suffix:", suffix)
+print("Concatenated:", concat)
+
+# some mass calculations
+mfull = seq.getMonoWeight() # weight of M
+mprecursor = seq.getMonoWeight(Residue.ResidueType.Full, 2) # weight of M+2H
+
+# we can calculate mass-over-charge manually
+mz = seq.getMonoWeight(Residue.ResidueType.Full, 2) / 2.0 # m/z of [M+2H]2+
+# or simply by:
+mz = seq.getMZ(2) # same as above
+
+print()
+print("Monoisotopic mass of peptide [M] is", mfull)
+print("Monoisotopic mass of peptide precursor [M+2H]2+ is", mprecursor)
+print("Monoisotopic m/z of [M+2H]2+ is", mz)
+
+
+
+seq = AASequence.fromString("DFPIANGER")
+print("The peptide", str(seq), "consists of the following amino acids:")
+for aa in seq:
+ print(aa.getName(), ":", aa.getMonoWeight())
+ 
+ 
+ 
+ 
+ seq = AASequence.fromString("C[143]PKCK(Label:13C(6)15N(2))CR")
+
+# check if AASequence has a N- or C-terminal modification
+if seq.hasNTerminalModification():
+    print("N-Term Modification: ", seq.getNTerminalModification().getFullId())
+if seq.hasCTerminalModification():
+    print("C-Term Modification: ", seq.getCTerminalModification().getFullId())
+# iterate over all residues and look for modifications
+for aa in seq:
+    if (aa.isModified()):
+        print(aa.getName(), ":", aa.getMonoWeight(), ":", aa.getModificationName())
+    else:
+        print(aa.getName(), ":", aa.getMonoWeight())
+        
+        
+seq = AASequence.fromString("DFPIANGER")
+seq_formula = seq.getFormula()
+print("Peptide", seq, "has molecular formula", seq_formula)
+
+
+
+coarse_isotopes = seq_formula.getIsotopeDistribution( CoarseIsotopePatternGenerator(6) )
+for iso in coarse_isotopes.getContainer():
+    print ("Isotope", iso.getMZ(), "has abundance", iso.getIntensity()*100, "%")
+fine_isotopes = seq_formula.getIsotopeDistribution( FineIsotopePatternGenerator(0.01) ) 
+for iso in fine_isotopes.getContainer():
+    print ("Isotope", iso.getMZ(), "has abundance", iso.getIntensity()*100, "%")
+
+
+def plotIsotopeDistribution(isotope_distribution, title="Isotope distribution"):
+    plt.title(title)
+    distribution = {"mass": [], "abundance": []}
+    for iso in isotope_distribution.getContainer():
+        distribution["mass"].append(iso.getMZ())
+        distribution["abundance"].append(iso.getIntensity() * 100)
+
+    bars = plt.bar(distribution["mass"], distribution["abundance"], width=0.01, snap=False) # snap ensures that all bars are rendered
+
+    plt.ylim([0, 110])
+    plt.xticks(range(math.ceil(distribution["mass"][0]) - 2,
+                     math.ceil(distribution["mass"][-1]) + 2))
+    plt.xlabel("Atomic mass (u)")
+    plt.ylabel("Relative abundance (%)")
+
+plt.figure(figsize=(10,7))
+plt.subplot(1,2,1)
+plotIsotopeDistribution(coarse_isotopes, "Isotope distribution - coarse")
+plt.subplot(1,2,2)
+plotIsotopeDistribution(fine_isotopes, "Isotope distribution - fine structure")
+plt.show()
