@@ -1,0 +1,63 @@
+from pyopenms import *
+from urllib.request import urlretrieve
+Path = "https://www.uniprot.org/uniprot/P43034.fasta"
+urlretrieve (Path , "human.fasta")
+
+dig = ProteaseDigestion()
+dig.getEnzymeName() # Trypsin
+bsa = "".join([l.strip() for l in open("human.fasta").readlines()[1:]])
+bsa = AASequence.fromString(bsa)
+# create all digestion products
+result = []
+dig.digest(bsa, result)
+print(result[2].toString())
+len(result) 
+dig.digest(bsa, result, 7, 40)
+for s in result:
+    print(s.toString())
+dig.setMissedCleavages(2)
+dig.digest(bsa, result, 7, 40)
+for s in result:
+    print(s.toString())
+#######################################################################Yeast
+
+from urllib.request import urlretrieve
+ah = "https://www.uniprot.org/uniprot/Q00246.fasta"
+urlretrieve (ah , "YEAST.fasta")
+dig = ProteaseDigestion()
+dig.getEnzymeName() # Trypsin
+bsa = "".join([l.strip() for l in open("YEAST.fasta").readlines()[1:]])
+bsa = AASequence.fromString(bsa)
+result = []
+dig.digest(bsa, result)
+print(result[9].toString())
+len(result) 
+dig.digest(bsa, result, 7, 40)
+for s in result:
+    print(s.toString())
+dig.setMissedCleavages(2)
+dig.digest(bsa, result, 7, 40)
+for s in result:
+    print(s.toString())
+from urllib.request import urlretrieve
+path = "https://www.uniprot.org/uniprot/P43034.fasta"
+urlretrieve (path , "human.fasta")
+
+dig = ProteaseDigestion()
+dig.setEnzyme('Lys-C')
+bsa = "".join([l.strip() for l in open("human.fasta").readlines()[1:]])
+bsa = AASequence.fromString(bsa)
+result = []
+dig.digest(bsa, result)
+print(result[4].toString())
+len(result) 
+path = "https://www.uniprot.org/uniprot/Q00246.fasta"
+urlretrieve (path , "YEAST.fasta")
+dig = ProteaseDigestion()
+dig.setEnzyme('Lys-C')
+bsa = "".join([l.strip() for l in open("YEAST.fasta").readlines()[1:]])
+bsa = AASequence.fromString(bsa)
+result = []
+dig.digest(bsa, result)
+print(result[4].toString())
+len(result) 
